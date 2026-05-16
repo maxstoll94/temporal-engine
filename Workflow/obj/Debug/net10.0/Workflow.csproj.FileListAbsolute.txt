@@ -1,0 +1,12 @@
+/Users/maximilianstoll/Desktop/repositories/temporal/Workflow/bin/Debug/net10.0/Workflow.deps.json
+/Users/maximilianstoll/Desktop/repositories/temporal/Workflow/bin/Debug/net10.0/Workflow.dll
+/Users/maximilianstoll/Desktop/repositories/temporal/Workflow/bin/Debug/net10.0/Workflow.pdb
+/Users/maximilianstoll/Desktop/repositories/temporal/Workflow/obj/Debug/net10.0/Workflow.csproj.AssemblyReference.cache
+/Users/maximilianstoll/Desktop/repositories/temporal/Workflow/obj/Debug/net10.0/Workflow.GeneratedMSBuildEditorConfig.editorconfig
+/Users/maximilianstoll/Desktop/repositories/temporal/Workflow/obj/Debug/net10.0/Workflow.AssemblyInfoInputs.cache
+/Users/maximilianstoll/Desktop/repositories/temporal/Workflow/obj/Debug/net10.0/Workflow.AssemblyInfo.cs
+/Users/maximilianstoll/Desktop/repositories/temporal/Workflow/obj/Debug/net10.0/Workflow.csproj.CoreCompileInputs.cache
+/Users/maximilianstoll/Desktop/repositories/temporal/Workflow/obj/Debug/net10.0/Workflow.dll
+/Users/maximilianstoll/Desktop/repositories/temporal/Workflow/obj/Debug/net10.0/refint/Workflow.dll
+/Users/maximilianstoll/Desktop/repositories/temporal/Workflow/obj/Debug/net10.0/Workflow.pdb
+/Users/maximilianstoll/Desktop/repositories/temporal/Workflow/obj/Debug/net10.0/ref/Workflow.dll

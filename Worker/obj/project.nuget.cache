@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "8ElkbOlxi28=",
+  "success": true,
+  "projectFilePath": "/Users/maximilianstoll/Desktop/repositories/temporal/Worker/Worker.csproj",
+  "expectedPackageFiles": [
+    "/Users/maximilianstoll/.nuget/packages/google.protobuf/3.26.1/google.protobuf.3.26.1.nupkg.sha512",
+    "/Users/maximilianstoll/.nuget/packages/microsoft.extensions.logging.abstractions/2.2.0/microsoft.extensions.logging.abstractions.2.2.0.nupkg.sha512",
+    "/Users/maximilianstoll/.nuget/packages/nexusrpc/0.3.0/nexusrpc.0.3.0.nupkg.sha512",
+    "/Users/maximilianstoll/.nuget/packages/temporalio/1.14.1/temporalio.1.14.1.nupkg.sha512"
+  ],
+  "logs": []
+}

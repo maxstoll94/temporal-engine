@@ -1,0 +1,133 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "Workflow/1.0.0": {
+        "dependencies": {
+          "Temporalio": "1.14.1"
+        },
+        "runtime": {
+          "Workflow.dll": {}
+        }
+      },
+      "Google.Protobuf/3.26.1": {
+        "runtime": {
+          "lib/net5.0/Google.Protobuf.dll": {
+            "assemblyVersion": "3.26.1.0",
+            "fileVersion": "3.26.1.0"
+          }
+        }
+      },
+      "Microsoft.Extensions.Logging.Abstractions/2.2.0": {
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Logging.Abstractions.dll": {
+            "assemblyVersion": "2.2.0.0",
+            "fileVersion": "2.2.0.18315"
+          }
+        }
+      },
+      "NexusRpc/0.3.0": {
+        "runtime": {
+          "lib/netcoreapp3.1/NexusRpc.dll": {
+            "assemblyVersion": "0.3.0.0",
+            "fileVersion": "0.3.0.0"
+          }
+        }
+      },
+      "Temporalio/1.14.1": {
+        "dependencies": {
+          "Google.Protobuf": "3.26.1",
+          "Microsoft.Extensions.Logging.Abstractions": "2.2.0",
+          "NexusRpc": "0.3.0"
+        },
+        "runtime": {
+          "lib/netcoreapp3.1/Temporalio.dll": {
+            "assemblyVersion": "1.14.1.0",
+            "fileVersion": "1.14.1.0"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/linux-arm64/native/libtemporalio_sdk_core_c_bridge.so": {
+            "rid": "linux-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux-musl-arm64/native/libtemporalio_sdk_core_c_bridge.so": {
+            "rid": "linux-musl-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux-musl-x64/native/libtemporalio_sdk_core_c_bridge.so": {
+            "rid": "linux-musl-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux-x64/native/libtemporalio_sdk_core_c_bridge.so": {
+            "rid": "linux-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/osx-arm64/native/libtemporalio_sdk_core_c_bridge.dylib": {
+            "rid": "osx-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/osx-x64/native/libtemporalio_sdk_core_c_bridge.dylib": {
+            "rid": "osx-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-arm64/native/temporalio_sdk_core_c_bridge.dll": {
+            "rid": "win-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x64/native/temporalio_sdk_core_c_bridge.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Workflow/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Google.Protobuf/3.26.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-CHZX8zXqhF/fdUtd+AYzew8T2HFkAoe5c7lbGxZY/qryAlQXckDvM5BfOJjXlMS7kyICqQTMszj4w1bX5uBJ/w==",
+      "path": "google.protobuf/3.26.1",
+      "hashPath": "google.protobuf.3.26.1.nupkg.sha512"
+    },
+    "Microsoft.Extensions.Logging.Abstractions/2.2.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-B2WqEox8o+4KUOpL7rZPyh6qYjik8tHi2tN8Z9jZkHzED8ElYgZa/h6K+xliB435SqUcWT290Fr2aa8BtZjn8A==",
+      "path": "microsoft.extensions.logging.abstractions/2.2.0",
+      "hashPath": "microsoft.extensions.logging.abstractions.2.2.0.nupkg.sha512"
+    },
+    "NexusRpc/0.3.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Kr+NMSZ5428AvxpzShdJcQxc9w6HT8SM6FXQMekC4K9wGpmC1m/L2pQJydpvVTwRBu3qAIYKPI37KWexF4Gtcg==",
+      "path": "nexusrpc/0.3.0",
+      "hashPath": "nexusrpc.0.3.0.nupkg.sha512"
+    },
+    "Temporalio/1.14.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-XodNgqj4YshJrRUOFAzoSBiH6lF6qMwaFGXHuni/kqy7QiTr53R7gKtztSq4tpsv9BfGELRA7456WXFHv5mM7g==",
+      "path": "temporalio/1.14.1",
+      "hashPath": "temporalio.1.14.1.nupkg.sha512"
+    }
+  }
+}
