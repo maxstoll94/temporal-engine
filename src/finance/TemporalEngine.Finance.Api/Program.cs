@@ -1,7 +1,12 @@
+using OpenTelemetry.Trace;
 using Temporalio.Client;
+using Temporalio.Extensions.OpenTelemetry;
 using TemporalEngine.Finance.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddServiceDefaults();
+builder.Services.AddOpenTelemetry().WithTracing(t => t.AddSource(TracingInterceptor.ClientSource.Name));
 
 var temporalHost = builder.Configuration["Temporal:TargetHost"] ?? "localhost:7233";
 var temporalNamespace = builder.Configuration["Temporal:Namespace"] ?? "default";
@@ -10,11 +15,11 @@ builder.Services.AddSingleton<ITemporalClient>(_ =>
     TemporalClient.ConnectAsync(new TemporalClientConnectOptions(temporalHost)
     {
         Namespace = temporalNamespace,
+        Interceptors = new[] { new TracingInterceptor() },
     }).GetAwaiter().GetResult());
 
-builder.WebHost.UseUrls(builder.Configuration["Urls"] ?? "http://localhost:5003");
-
 var app = builder.Build();
+app.MapDefaultEndpoints();
 
 app.MapGet("/", () => "Finance API");
 

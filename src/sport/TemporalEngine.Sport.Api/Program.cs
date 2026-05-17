@@ -1,8 +1,14 @@
+using OpenTelemetry.Trace;
 using Temporalio.Client;
+using Temporalio.Extensions.OpenTelemetry;
 using TemporalEngine.Shared.Contracts;
 using TemporalEngine.Sport.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Aspire service defaults (OTel, health checks, resilience, service discovery).
+builder.AddServiceDefaults();
+builder.Services.AddOpenTelemetry().WithTracing(t => t.AddSource(TracingInterceptor.ClientSource.Name));
 
 var temporalHost = builder.Configuration["Temporal:TargetHost"] ?? "localhost:7233";
 var temporalNamespace = builder.Configuration["Temporal:Namespace"] ?? "default";
@@ -11,12 +17,11 @@ builder.Services.AddSingleton<ITemporalClient>(_ =>
     TemporalClient.ConnectAsync(new TemporalClientConnectOptions(temporalHost)
     {
         Namespace = temporalNamespace,
+        Interceptors = new[] { new TracingInterceptor() },
     }).GetAwaiter().GetResult());
 
-// Per-service port — overridable via ASPNETCORE_URLS.
-builder.WebHost.UseUrls(builder.Configuration["Urls"] ?? "http://localhost:5001");
-
 var app = builder.Build();
+app.MapDefaultEndpoints();
 
 app.MapGet("/", () => "Sport API");
 

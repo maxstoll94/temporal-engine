@@ -1,9 +1,6 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using TemporalEngine.Catalog.Data;
 using TemporalEngine.Catalog.Workflows;
@@ -15,34 +12,27 @@ using TemporalEngine.Sport.Data;
 using TemporalEngine.Sport.Workflows;
 using Temporalio.Extensions.Hosting;
 using Temporalio.Extensions.OpenTelemetry;
-using Temporalio.Runtime;
 
-var builder = Host.CreateApplicationBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
+
+// Aspire service defaults (OTel, health checks, resilience, service discovery).
+builder.AddServiceDefaults();
+
+// Add Temporalio workflow/activity/client tracing sources on top of the defaults.
+builder.Services.AddOpenTelemetry().WithTracing(t => t
+    .AddSource(TracingInterceptor.ClientSource.Name)
+    .AddSource(TracingInterceptor.WorkflowsSource.Name)
+    .AddSource(TracingInterceptor.ActivitiesSource.Name));
 
 var temporalHost = builder.Configuration["Temporal:TargetHost"] ?? "localhost:7233";
 var temporalNamespace = builder.Configuration["Temporal:Namespace"] ?? "default";
-var otlpEndpoint = builder.Configuration["Otlp:Endpoint"] ?? "http://localhost:4317";
-
-// === OpenTelemetry tracing ===
-// One ActivitySource per "kind of work" we emit spans for. The Temporal interceptor
-// emits its own spans for workflow/activity execution; we register its source here.
-builder.Services.AddOpenTelemetry()
-    .ConfigureResource(r => r.AddService("temporal-engine.worker"))
-    .WithTracing(t => t
-        .AddSource(TracingInterceptor.ClientSource.Name)
-        .AddSource(TracingInterceptor.WorkflowsSource.Name)
-        .AddSource(TracingInterceptor.ActivitiesSource.Name)
-        .AddOtlpExporter(opt => opt.Endpoint = new Uri(otlpEndpoint)));
 
 // Comma-separated list of task queues this process should host. Default: all three.
-// Set TemporalEngine__LoadWorkers=sport (etc.) to run only one in a deployed pod.
 var loadWorkers = (builder.Configuration["TemporalEngine:LoadWorkers"] ?? "sport,catalog,finance")
     .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
     .Select(s => s.ToLowerInvariant())
     .ToHashSet();
 
-// Shared Temporal client (one connection used by all hosted workers in this process).
-// TracingInterceptor wires OTel spans into the client + workers (workflow/activity execution).
 builder.Services.AddTemporalClient(opts =>
 {
     opts.TargetHost = temporalHost;
@@ -53,10 +43,7 @@ builder.Services.AddTemporalClient(opts =>
 // === SPORT ===
 if (loadWorkers.Contains("sport"))
 {
-    builder.Services.AddDbContext<SportDbContext>(o =>
-        o.UseNpgsql(builder.Configuration.GetConnectionString("Sport")
-            ?? throw new InvalidOperationException("ConnectionStrings:Sport not configured")));
-
+    builder.AddNpgsqlDbContext<SportDbContext>("Sport");
     builder.Services
         .AddHostedTemporalWorker(taskQueue: TaskQueues.Sport)
         .AddScopedActivities<SportActivities>()
@@ -67,10 +54,7 @@ if (loadWorkers.Contains("sport"))
 // === CATALOG ===
 if (loadWorkers.Contains("catalog"))
 {
-    builder.Services.AddDbContext<CatalogDbContext>(o =>
-        o.UseNpgsql(builder.Configuration.GetConnectionString("Catalog")
-            ?? throw new InvalidOperationException("ConnectionStrings:Catalog not configured")));
-
+    builder.AddNpgsqlDbContext<CatalogDbContext>("Catalog");
     builder.Services
         .AddHostedTemporalWorker(taskQueue: TaskQueues.Catalog)
         .AddScopedActivities<CatalogActivities>()
@@ -80,12 +64,8 @@ if (loadWorkers.Contains("catalog"))
 // === FINANCE ===
 if (loadWorkers.Contains("finance"))
 {
-    builder.Services.AddDbContext<FinanceDbContext>(o =>
-        o.UseNpgsql(builder.Configuration.GetConnectionString("Finance")
-            ?? throw new InvalidOperationException("ConnectionStrings:Finance not configured")));
-
+    builder.AddNpgsqlDbContext<FinanceDbContext>("Finance");
     builder.Services.AddScoped<IOdooClient, FakeOdooClient>();
-
     builder.Services
         .AddHostedTemporalWorker(taskQueue: TaskQueues.Finance)
         .AddScopedActivities<FinanceActivities>()
@@ -93,6 +73,7 @@ if (loadWorkers.Contains("finance"))
 }
 
 var app = builder.Build();
+app.MapDefaultEndpoints();
 
 // Schema bootstrap (demo only — replace with migrations in production).
 using (var scope = app.Services.CreateScope())
