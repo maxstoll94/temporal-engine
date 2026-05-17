@@ -8,9 +8,10 @@ using System.Text.Json;
 //
 // Requires: Postgres + Temporal dev server up; worker running; Sport/Catalog/Finance APIs each running.
 
-var sportUrl   = Environment.GetEnvironmentVariable("SPORT_URL")   ?? "http://localhost:5001";
-var catalogUrl = Environment.GetEnvironmentVariable("CATALOG_URL") ?? "http://localhost:5002";
-var financeUrl = Environment.GetEnvironmentVariable("FINANCE_URL") ?? "http://localhost:5003";
+var sportUrl       = Environment.GetEnvironmentVariable("SPORT_URL")       ?? "http://localhost:5001";
+var catalogUrl     = Environment.GetEnvironmentVariable("CATALOG_URL")     ?? "http://localhost:5002";
+var financeUrl     = Environment.GetEnvironmentVariable("FINANCE_URL")     ?? "http://localhost:5003";
+var temporalUiUrl  = Environment.GetEnvironmentVariable("TEMPORAL_UI_URL") ?? "http://localhost:8233";
 
 var externalFixtureId   = $"drv-{DateTimeOffset.UtcNow:HHmmss}";
 var athleteExternalId   = "athlete-001"; // matches the default starting athlete seeded in FixtureWorkflow
@@ -73,9 +74,7 @@ Console.WriteLine($"      -> payment sent");
 
 Console.WriteLine($"\nFlow triggered end-to-end.");
 Console.WriteLine($"Inspect in Temporal UI:");
-Console.WriteLine($"  http://localhost:8233/namespaces/default/workflows?query=EngineCorrelationId%3D%22{correlationId}%22");
-Console.WriteLine($"Inspect in Jaeger:");
-Console.WriteLine($"  http://localhost:16686/search?service=temporal-engine.worker");
+Console.WriteLine($"  {temporalUiUrl}/namespaces/default/workflows?query=EngineCorrelationId%3D%22{correlationId}%22");
 
 static async Task EnsureSuccess(HttpResponseMessage resp, string what)
 {

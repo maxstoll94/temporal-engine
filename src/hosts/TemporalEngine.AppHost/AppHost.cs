@@ -55,9 +55,10 @@ var financeApi = builder.AddProject<Projects.TemporalEngine_Finance_Api>("financ
 // Use the Aspire dashboard's "Start" button on the resource, or run it manually:
 //   dotnet run --project src/hosts/TemporalEngine.DemoDriver
 builder.AddProject<Projects.TemporalEngine_DemoDriver>("demo-driver")
-    .WithEnvironment("SPORT_URL",   sportApi.GetEndpoint("http"))
-    .WithEnvironment("CATALOG_URL", catalogApi.GetEndpoint("http"))
-    .WithEnvironment("FINANCE_URL", financeApi.GetEndpoint("http"))
+    .WithEnvironment("SPORT_URL",       sportApi.GetEndpoint("http"))
+    .WithEnvironment("CATALOG_URL",     catalogApi.GetEndpoint("http"))
+    .WithEnvironment("FINANCE_URL",     financeApi.GetEndpoint("http"))
+    .WithEnvironment("TEMPORAL_UI_URL", temporal.GetEndpoint("ui"))
     .WithExplicitStart();
 
 builder.Build().Run();
