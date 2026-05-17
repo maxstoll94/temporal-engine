@@ -10,7 +10,10 @@ var temporal = builder.AddContainer("temporal", "temporalio/admin-tools")
         "--ui-port", "8233",
         "--namespace", "default")
     .WithEndpoint(targetPort: 7233, name: "grpc")
-    .WithEndpoint(targetPort: 8233, name: "ui", scheme: "http");
+    .WithEndpoint(targetPort: 8233, name: "ui", scheme: "http")
+    // UI binds after the gRPC frontend is ready, so a successful 200 here means
+    // the server is actually accepting client connections. WaitFor() blocks on this.
+    .WithHttpHealthCheck("/", endpointName: "ui");
 
 var temporalGrpc = temporal.GetEndpoint("grpc");
 

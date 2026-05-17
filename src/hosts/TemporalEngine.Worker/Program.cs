@@ -75,6 +75,32 @@ if (loadWorkers.Contains("finance"))
 var app = builder.Build();
 app.MapDefaultEndpoints();
 
+// Ensure custom search attributes exist on the namespace before the worker starts polling.
+// Idempotent — failing on already-exists is fine.
+using (var scope = app.Services.CreateScope())
+{
+    var client = scope.ServiceProvider.GetRequiredService<Temporalio.Client.ITemporalClient>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+    foreach (var name in new[] { SearchAttributeNames.CorrelationId, SearchAttributeNames.Stage })
+    {
+        try
+        {
+            await client.Connection.OperatorService.AddSearchAttributesAsync(
+                new Temporalio.Api.OperatorService.V1.AddSearchAttributesRequest
+                {
+                    Namespace = temporalNamespace,
+                    SearchAttributes = { [name] = Temporalio.Api.Enums.V1.IndexedValueType.Keyword },
+                });
+            logger.LogInformation("Registered search attribute {Name}", name);
+        }
+        catch (Temporalio.Exceptions.RpcException ex) when (ex.Code == Temporalio.Exceptions.RpcException.StatusCode.AlreadyExists)
+        {
+            // already registered — fine
+        }
+    }
+}
+
 // Schema bootstrap (demo only — replace with migrations in production).
 using (var scope = app.Services.CreateScope())
 {
