@@ -46,8 +46,10 @@ static async Task SignalWithRetry(Func<Task> signal, int maxAttempts = 10, int i
             await signal();
             return;
         }
-        catch (Temporalio.Exceptions.RpcException ex)
-            when (ex.Code == Temporalio.Exceptions.RpcException.StatusCode.NotFound && attempt < maxAttempts)
+        catch (Temporalio.Exceptions.RpcException ex) when (attempt < maxAttempts && (
+            ex.Code is Temporalio.Exceptions.RpcException.StatusCode.NotFound
+                    or Temporalio.Exceptions.RpcException.StatusCode.Unavailable
+                    or Temporalio.Exceptions.RpcException.StatusCode.DeadlineExceeded))
         {
             await Task.Delay(TimeSpan.FromMilliseconds(initialDelayMs * attempt));
         }
