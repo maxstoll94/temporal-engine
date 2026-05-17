@@ -8,11 +8,13 @@
 
   <ItemGroup>
     <PackageReference Include="Temporalio" Version="1.14.1" />
+    <PackageReference Include="Temporalio.Extensions.OpenTelemetry" Version="1.14.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\TemporalEngine.Finance.Contracts\TemporalEngine.Finance.Contracts.csproj" />
     <ProjectReference Include="..\..\shared\TemporalEngine.Shared.Contracts\TemporalEngine.Shared.Contracts.csproj" />
+    <ProjectReference Include="..\..\shared\TemporalEngine.ServiceDefaults\TemporalEngine.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>
