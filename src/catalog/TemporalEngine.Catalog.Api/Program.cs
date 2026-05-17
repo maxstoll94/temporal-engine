@@ -18,15 +18,6 @@ var app = builder.Build();
 
 app.MapGet("/", () => "Catalog API");
 
-// Signal an athlete subbing in (lands on EventWorkflow — catalog manages the auction roster).
-app.MapPost("/events/{externalFixtureId}/athletes", async (
-    string externalFixtureId, AthleteSubbingInSignal signal, ITemporalClient client) =>
-{
-    var handle = client.GetWorkflowHandle($"event-{externalFixtureId}");
-    await handle.SignalAsync("AthleteSubbingIn", new object[] { signal });
-    return Results.Accepted();
-});
-
 // Signal a bid (lands on ProductWorkflow).
 app.MapPost("/products/{externalFixtureId}/{athleteExternalId}/bids", async (
     string externalFixtureId, string athleteExternalId,
