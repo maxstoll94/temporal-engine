@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.3.3" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
+    <PackageReference Include="Temporalio.Extensions.Hosting" Version="1.14.1" />
+    <PackageReference Include="Temporalio.Extensions.OpenTelemetry" Version="1.14.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TemporalEngine.Catalog.Workflows\TemporalEngine.Catalog.Workflows.csproj" />
+    <ProjectReference Include="..\TemporalEngine.Catalog.Data\TemporalEngine.Catalog.Data.csproj" />
+    <ProjectReference Include="..\..\shared\TemporalEngine.ServiceDefaults\TemporalEngine.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+</Project>
