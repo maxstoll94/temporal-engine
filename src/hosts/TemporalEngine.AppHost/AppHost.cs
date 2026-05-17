@@ -1,3 +1,5 @@
+using Aspire.Hosting.ApplicationModel;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
 // === Temporal dev server (single-process, in-memory) ===
@@ -7,10 +9,15 @@ var temporal = builder.AddContainer("temporal", "temporalio/admin-tools")
         "--port", "7233",
         "--ui-port", "8233",
         "--namespace", "default")
-    .WithEndpoint(port: 7233, targetPort: 7233, name: "grpc")
-    .WithEndpoint(port: 8233, targetPort: 8233, name: "ui", scheme: "http");
+    .WithEndpoint(targetPort: 7233, name: "grpc")
+    .WithEndpoint(targetPort: 8233, name: "ui", scheme: "http");
 
 var temporalGrpc = temporal.GetEndpoint("grpc");
+
+// Temporal client wants host:port without a scheme. ReferenceExpression defers resolution
+// until the host process starts, so the dynamically-assigned Aspire port gets substituted.
+var temporalTarget = ReferenceExpression.Create(
+    $"{temporalGrpc.Property(EndpointProperty.Host)}:{temporalGrpc.Property(EndpointProperty.Port)}");
 
 // === Postgres (one instance, three databases) ===
 var postgres = builder.AddPostgres("postgres")
@@ -21,8 +28,6 @@ var sportDb   = postgres.AddDatabase("Sport",   "temporal_sport");
 var catalogDb = postgres.AddDatabase("Catalog", "temporal_catalog");
 var financeDb = postgres.AddDatabase("Finance", "temporal_finance");
 
-// Shared env var that points every service at the same Temporal frontend.
-// (Temporal client wants host:port without a scheme.)
 const string temporalTargetEnv = "Temporal__TargetHost";
 
 // === Worker (hosts all three task queues) ===
@@ -30,20 +35,20 @@ var worker = builder.AddProject<Projects.TemporalEngine_Worker>("worker")
     .WithReference(sportDb).WaitFor(sportDb)
     .WithReference(catalogDb).WaitFor(catalogDb)
     .WithReference(financeDb).WaitFor(financeDb)
-    .WithEnvironment(temporalTargetEnv, $"{temporalGrpc.Property(Aspire.Hosting.ApplicationModel.EndpointProperty.Host)}:{temporalGrpc.Property(Aspire.Hosting.ApplicationModel.EndpointProperty.Port)}")
+    .WithEnvironment(temporalTargetEnv, temporalTarget)
     .WaitFor(temporal);
 
 // === Per-service APIs ===
 var sportApi = builder.AddProject<Projects.TemporalEngine_Sport_Api>("sport-api")
-    .WithEnvironment(temporalTargetEnv, $"{temporalGrpc.Property(Aspire.Hosting.ApplicationModel.EndpointProperty.Host)}:{temporalGrpc.Property(Aspire.Hosting.ApplicationModel.EndpointProperty.Port)}")
+    .WithEnvironment(temporalTargetEnv, temporalTarget)
     .WaitFor(temporal).WaitFor(worker);
 
 var catalogApi = builder.AddProject<Projects.TemporalEngine_Catalog_Api>("catalog-api")
-    .WithEnvironment(temporalTargetEnv, $"{temporalGrpc.Property(Aspire.Hosting.ApplicationModel.EndpointProperty.Host)}:{temporalGrpc.Property(Aspire.Hosting.ApplicationModel.EndpointProperty.Port)}")
+    .WithEnvironment(temporalTargetEnv, temporalTarget)
     .WaitFor(temporal).WaitFor(worker);
 
 var financeApi = builder.AddProject<Projects.TemporalEngine_Finance_Api>("finance-api")
-    .WithEnvironment(temporalTargetEnv, $"{temporalGrpc.Property(Aspire.Hosting.ApplicationModel.EndpointProperty.Host)}:{temporalGrpc.Property(Aspire.Hosting.ApplicationModel.EndpointProperty.Port)}")
+    .WithEnvironment(temporalTargetEnv, temporalTarget)
     .WaitFor(temporal).WaitFor(worker);
 
 // === Demo driver (on-demand console — not started automatically) ===
