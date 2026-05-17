@@ -6,5 +6,6 @@ public class Fixture
     public string ExternalId { get; set; } = "";
     public string Name { get; set; } = "";
     public DateTimeOffset ScheduledKickoff { get; set; }
+    public string Status { get; set; } = "Scheduled";
     public DateTimeOffset CreatedAt { get; set; }
 }

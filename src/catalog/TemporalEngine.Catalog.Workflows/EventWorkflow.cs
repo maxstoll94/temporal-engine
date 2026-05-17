@@ -2,11 +2,8 @@ using Temporalio.Common;
 using Temporalio.Workflows;
 using TemporalEngine.Catalog.Contracts;
 using TemporalEngine.Shared.Contracts;
-using TemporalEngine.Sport.Contracts;
 
-namespace TemporalEngine.Sport.Workflows;
-
-public record EventWorkflowResult(Guid EventId, IReadOnlyList<ProductResult> ProductResults);
+namespace TemporalEngine.Catalog.Workflows;
 
 [Workflow(WorkflowNames.EventWorkflow)]
 public class EventWorkflow
@@ -39,22 +36,22 @@ public class EventWorkflow
             SearchAttrs.CorrelationId.ValueSet(input.CorrelationId),
             SearchAttrs.Stage.ValueSet("event-live"));
 
-        // 1. Persist event
+        // 1. Persist event (catalog-side)
         _eventId = await Workflow.ExecuteActivityAsync(
-            (SportActivities a) => a.CreateEventAsync(input),
+            (CatalogActivities a) => a.CreateEventAsync(input),
             DefaultActivityOptions);
 
         await Workflow.ExecuteActivityAsync(
-            (SportActivities a) => a.MarkEventStatusAsync(_eventId, "Live"),
+            (CatalogActivities a) => a.MarkEventStatusAsync(_eventId, "Live"),
             DefaultActivityOptions);
 
-        // 2. Start a ProductWorkflow (on the catalog queue) for each starting athlete.
+        // 2. Start a ProductWorkflow (same catalog queue) for each starting athlete.
         foreach (var athlete in input.StartingAthletes)
         {
             await StartProductForAthleteAsync(athlete);
         }
 
-        // 3. Wait until scheduled end OR until an external EventEnded signal flips the flag.
+        // 3. Wait until scheduled end OR until an external EndEvent signal flips the flag.
         var timeUntilEnd = input.ScheduledEnd - Workflow.UtcNow;
         if (timeUntilEnd > TimeSpan.Zero)
         {
@@ -79,7 +76,7 @@ public class EventWorkflow
 
         // 6. Mark event completed.
         await Workflow.ExecuteActivityAsync(
-            (SportActivities a) => a.MarkEventStatusAsync(_eventId, "Completed"),
+            (CatalogActivities a) => a.MarkEventStatusAsync(_eventId, "Completed"),
             DefaultActivityOptions);
 
         return new EventWorkflowResult(_eventId, productResults);

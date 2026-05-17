@@ -7,11 +7,21 @@ public class CatalogDbContext : DbContext
 {
     public CatalogDbContext(DbContextOptions<CatalogDbContext> options) : base(options) { }
 
+    public DbSet<Event> Events => Set<Event>();
     public DbSet<Product> Products => Set<Product>();
     public DbSet<Bid> Bids => Set<Bid>();
 
     protected override void OnModelCreating(ModelBuilder mb)
     {
+        mb.Entity<Event>(b =>
+        {
+            b.HasKey(e => e.Id);
+            b.HasIndex(e => e.ExternalFixtureId);
+            b.Property(e => e.ExternalFixtureId).HasMaxLength(100);
+            b.Property(e => e.Name).HasMaxLength(200);
+            b.Property(e => e.Status).HasMaxLength(40);
+        });
+
         mb.Entity<Product>(b =>
         {
             b.HasKey(p => p.Id);

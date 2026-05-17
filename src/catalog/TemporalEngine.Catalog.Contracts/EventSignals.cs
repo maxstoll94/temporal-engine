@@ -1,4 +1,4 @@
-namespace TemporalEngine.Sport.Contracts;
+namespace TemporalEngine.Catalog.Contracts;
 
 public record AthleteSubbingInSignal(
     string AthleteExternalId,
