@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Temporalio" Version="1.14.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TemporalEngine.Finance.Contracts\TemporalEngine.Finance.Contracts.csproj" />
+    <ProjectReference Include="..\TemporalEngine.Finance.Domain\TemporalEngine.Finance.Domain.csproj" />
+    <ProjectReference Include="..\TemporalEngine.Finance.Data\TemporalEngine.Finance.Data.csproj" />
+    <ProjectReference Include="..\..\shared\TemporalEngine.Shared.Contracts\TemporalEngine.Shared.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

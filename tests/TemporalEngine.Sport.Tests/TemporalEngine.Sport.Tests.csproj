@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.8" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="Temporalio" Version="1.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\sport\TemporalEngine.Sport.Workflows\TemporalEngine.Sport.Workflows.csproj" />
+    <ProjectReference Include="..\..\src\sport\TemporalEngine.Sport.Data\TemporalEngine.Sport.Data.csproj" />
+    <ProjectReference Include="..\..\src\sport\TemporalEngine.Sport.Domain\TemporalEngine.Sport.Domain.csproj" />
+    <ProjectReference Include="..\..\src\sport\TemporalEngine.Sport.Contracts\TemporalEngine.Sport.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\shared\TemporalEngine.Shared.Contracts\TemporalEngine.Shared.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\catalog\TemporalEngine.Catalog.Contracts\TemporalEngine.Catalog.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

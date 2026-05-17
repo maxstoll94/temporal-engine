@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Temporalio" Version="1.14.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TemporalEngine.Sport.Contracts\TemporalEngine.Sport.Contracts.csproj" />
+    <ProjectReference Include="..\TemporalEngine.Sport.Domain\TemporalEngine.Sport.Domain.csproj" />
+    <ProjectReference Include="..\TemporalEngine.Sport.Data\TemporalEngine.Sport.Data.csproj" />
+    <ProjectReference Include="..\..\shared\TemporalEngine.Shared.Contracts\TemporalEngine.Shared.Contracts.csproj" />
+    <ProjectReference Include="..\..\catalog\TemporalEngine.Catalog.Contracts\TemporalEngine.Catalog.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

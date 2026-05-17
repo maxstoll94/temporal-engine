@@ -1,0 +1,31 @@
+services:
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: temporal-engine-jaeger
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686"   # UI
+      - "4317:4317"     # OTLP gRPC
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: temporal-engine-postgres
+    environment:
+      POSTGRES_USER: temporal
+      POSTGRES_PASSWORD: temporal
+      # Create the three service databases on first boot via the init script.
+      POSTGRES_DB: temporal_sport
+    ports:
+      - "5432:5432"
+    volumes:
+      - temporal-engine-postgres:/var/lib/postgresql/data
+      - ./scripts/postgres-init.sh:/docker-entrypoint-initdb.d/postgres-init.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U temporal -d temporal_sport"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  temporal-engine-postgres:
