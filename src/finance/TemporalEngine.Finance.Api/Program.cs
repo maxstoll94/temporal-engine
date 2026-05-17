@@ -1,12 +1,7 @@
-using OpenTelemetry.Trace;
 using Temporalio.Client;
-using Temporalio.Extensions.OpenTelemetry;
 using TemporalEngine.Finance.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.AddServiceDefaults();
-builder.Services.AddOpenTelemetry().WithTracing(t => t.AddSource(TracingInterceptor.ClientSource.Name));
 
 var temporalHost = builder.Configuration["Temporal:TargetHost"] ?? "localhost:7233";
 var temporalNamespace = builder.Configuration["Temporal:Namespace"] ?? "default";
@@ -15,22 +10,21 @@ builder.Services.AddSingleton<ITemporalClient>(_ =>
     TemporalClient.ConnectAsync(new TemporalClientConnectOptions(temporalHost)
     {
         Namespace = temporalNamespace,
-        Interceptors = new[] { new TracingInterceptor() },
     }).GetAwaiter().GetResult());
 
+builder.WebHost.UseUrls(builder.Configuration["Urls"] ?? "http://localhost:5003");
+
 var app = builder.Build();
-app.MapDefaultEndpoints();
 
 app.MapGet("/", () => "Finance API");
 
-// Signal a payment received (lands on OrderWorkflow). Retries on NotFound for the
-// case where the order workflow hasn't spawned yet at signal time.
+// Signal a payment received (lands on OrderWorkflow).
 app.MapPost("/orders/{externalFixtureId}/{athleteExternalId}/payments", async (
     string externalFixtureId, string athleteExternalId,
     PaymentReceivedSignal signal, ITemporalClient client) =>
 {
     var handle = client.GetWorkflowHandle($"order-{externalFixtureId}-{athleteExternalId}");
-    await SignalWithRetry(() => handle.SignalAsync("PaymentReceived", new object[] { signal }));
+    await handle.SignalAsync("PaymentReceived", new object[] { signal });
     return Results.Accepted();
 });
 
@@ -40,27 +34,8 @@ app.MapPost("/orders/{externalFixtureId}/{athleteExternalId}/shipments", async (
     ShipmentUpdatedSignal signal, ITemporalClient client) =>
 {
     var handle = client.GetWorkflowHandle($"order-{externalFixtureId}-{athleteExternalId}");
-    await SignalWithRetry(() => handle.SignalAsync("ShipmentUpdated", new object[] { signal }));
+    await handle.SignalAsync("ShipmentUpdated", new object[] { signal });
     return Results.Accepted();
 });
 
 app.Run();
-
-static async Task SignalWithRetry(Func<Task> signal, int maxAttempts = 10, int initialDelayMs = 250)
-{
-    for (var attempt = 1; ; attempt++)
-    {
-        try
-        {
-            await signal();
-            return;
-        }
-        catch (Temporalio.Exceptions.RpcException ex) when (attempt < maxAttempts && (
-            ex.Code is Temporalio.Exceptions.RpcException.StatusCode.NotFound
-                    or Temporalio.Exceptions.RpcException.StatusCode.Unavailable
-                    or Temporalio.Exceptions.RpcException.StatusCode.DeadlineExceeded))
-        {
-            await Task.Delay(TimeSpan.FromMilliseconds(initialDelayMs * attempt));
-        }
-    }
-}
