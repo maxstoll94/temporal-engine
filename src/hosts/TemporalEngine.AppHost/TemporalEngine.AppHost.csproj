@@ -16,9 +16,10 @@
     <ProjectReference Include="..\..\sport\TemporalEngine.Sport.Api\TemporalEngine.Sport.Api.csproj" />
     <ProjectReference Include="..\..\catalog\TemporalEngine.Catalog.Api\TemporalEngine.Catalog.Api.csproj" />
     <ProjectReference Include="..\..\finance\TemporalEngine.Finance.Api\TemporalEngine.Finance.Api.csproj" />
-    <ProjectReference Include="..\TemporalEngine.Worker\TemporalEngine.Worker.csproj" />
     <ProjectReference Include="..\TemporalEngine.DemoDriver\TemporalEngine.DemoDriver.csproj" />
-    <ProjectReference Include="..\..\shared\TemporalEngine.ServiceDefaults\TemporalEngine.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\..\sport\TemporalEngine.Sport.Worker\TemporalEngine.Sport.Worker.csproj" />
+    <ProjectReference Include="..\..\catalog\TemporalEngine.Catalog.Worker\TemporalEngine.Catalog.Worker.csproj" />
+    <ProjectReference Include="..\..\finance\TemporalEngine.Finance.Worker\TemporalEngine.Finance.Worker.csproj" />
   </ItemGroup>
 
 </Project>

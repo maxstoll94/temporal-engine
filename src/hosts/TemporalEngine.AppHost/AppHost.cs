@@ -33,10 +33,18 @@ var financeDb = postgres.AddDatabase("Finance", "temporal_finance");
 
 const string temporalTargetEnv = "Temporal__TargetHost";
 
-// === Worker (hosts all three task queues) ===
-var worker = builder.AddProject<Projects.TemporalEngine_Worker>("worker")
+// === Per-service workers — each binds to its own task queue and its own database ===
+var sportWorker = builder.AddProject<Projects.TemporalEngine_Sport_Worker>("sport-worker")
     .WithReference(sportDb).WaitFor(sportDb)
+    .WithEnvironment(temporalTargetEnv, temporalTarget)
+    .WaitFor(temporal);
+
+var catalogWorker = builder.AddProject<Projects.TemporalEngine_Catalog_Worker>("catalog-worker")
     .WithReference(catalogDb).WaitFor(catalogDb)
+    .WithEnvironment(temporalTargetEnv, temporalTarget)
+    .WaitFor(temporal);
+
+var financeWorker = builder.AddProject<Projects.TemporalEngine_Finance_Worker>("finance-worker")
     .WithReference(financeDb).WaitFor(financeDb)
     .WithEnvironment(temporalTargetEnv, temporalTarget)
     .WaitFor(temporal);
@@ -44,15 +52,15 @@ var worker = builder.AddProject<Projects.TemporalEngine_Worker>("worker")
 // === Per-service APIs ===
 var sportApi = builder.AddProject<Projects.TemporalEngine_Sport_Api>("sport-api")
     .WithEnvironment(temporalTargetEnv, temporalTarget)
-    .WaitFor(temporal).WaitFor(worker);
+    .WaitFor(temporal).WaitFor(sportWorker);
 
 var catalogApi = builder.AddProject<Projects.TemporalEngine_Catalog_Api>("catalog-api")
     .WithEnvironment(temporalTargetEnv, temporalTarget)
-    .WaitFor(temporal).WaitFor(worker);
+    .WaitFor(temporal).WaitFor(catalogWorker);
 
 var financeApi = builder.AddProject<Projects.TemporalEngine_Finance_Api>("finance-api")
     .WithEnvironment(temporalTargetEnv, temporalTarget)
-    .WaitFor(temporal).WaitFor(worker);
+    .WaitFor(temporal).WaitFor(financeWorker);
 
 // === Demo driver (on-demand console — not started automatically) ===
 // Use the Aspire dashboard's "Start" button on the resource, or run it manually:
