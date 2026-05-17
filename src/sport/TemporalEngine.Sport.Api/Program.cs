@@ -13,7 +13,6 @@ builder.Services.AddSingleton<ITemporalClient>(_ =>
         Namespace = temporalNamespace,
     }).GetAwaiter().GetResult());
 
-// Per-service port — overridable via ASPNETCORE_URLS.
 builder.WebHost.UseUrls(builder.Configuration["Urls"] ?? "http://localhost:5001");
 
 var app = builder.Build();
@@ -41,15 +40,6 @@ app.MapPost("/fixtures", async (StartFixtureRequest req, ITemporalClient client)
         });
 
     return Results.Ok(new { workflowId = handle.Id, firstExecutionRunId = handle.ResultRunId });
-});
-
-// Signal an athlete subbing in (lands on EventWorkflow).
-app.MapPost("/fixtures/{externalFixtureId}/athletes", async (
-    string externalFixtureId, AthleteSubbingInSignal signal, ITemporalClient client) =>
-{
-    var handle = client.GetWorkflowHandle($"event-{externalFixtureId}");
-    await handle.SignalAsync("AthleteSubbingIn", new object[] { signal });
-    return Results.Accepted();
 });
 
 app.Run();

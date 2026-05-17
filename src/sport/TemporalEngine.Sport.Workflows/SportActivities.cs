@@ -39,6 +39,7 @@ public class SportActivities
             ExternalId = input.ExternalId,
             Name = input.Name,
             ScheduledKickoff = input.ScheduledKickoff,
+            Status = "Scheduled",
             CreatedAt = DateTimeOffset.UtcNow,
         };
         _db.Fixtures.Add(fixture);
@@ -49,41 +50,12 @@ public class SportActivities
     }
 
     [Activity]
-    public async Task<Guid> CreateEventAsync(CreateEventInput input)
+    public async Task MarkFixtureStatusAsync(Guid fixtureId, string status)
     {
         var ct = ActivityExecutionContext.Current.CancellationToken;
-
-        var existing = await _db.Events
-            .FirstOrDefaultAsync(e => e.FixtureId == input.FixtureId, ct);
-        if (existing is not null)
-        {
-            return existing.Id;
-        }
-
-        var evt = new Event
-        {
-            Id = Guid.NewGuid(),
-            FixtureId = input.FixtureId,
-            Name = input.Name,
-            ScheduledStart = input.ScheduledStart,
-            ScheduledEnd = input.ScheduledEnd,
-            Status = "Scheduled",
-            CreatedAt = DateTimeOffset.UtcNow,
-        };
-        _db.Events.Add(evt);
+        var fixture = await _db.Fixtures.FirstAsync(f => f.Id == fixtureId, ct);
+        fixture.Status = status;
         await _db.SaveChangesAsync(ct);
-
-        _logger.LogInformation("Created event {Id} for fixture {FixtureId}", evt.Id, evt.FixtureId);
-        return evt.Id;
-    }
-
-    [Activity]
-    public async Task MarkEventStatusAsync(Guid eventId, string status)
-    {
-        var ct = ActivityExecutionContext.Current.CancellationToken;
-        var evt = await _db.Events.FirstAsync(e => e.Id == eventId, ct);
-        evt.Status = status;
-        await _db.SaveChangesAsync(ct);
-        _logger.LogInformation("Event {Id} -> {Status}", eventId, status);
+        _logger.LogInformation("Fixture {Id} -> {Status}", fixtureId, status);
     }
 }

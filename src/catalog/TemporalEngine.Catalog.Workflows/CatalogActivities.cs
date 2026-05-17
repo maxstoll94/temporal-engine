@@ -19,6 +19,45 @@ public class CatalogActivities
     }
 
     [Activity]
+    public async Task<Guid> CreateEventAsync(CreateEventInput input)
+    {
+        var ct = ActivityExecutionContext.Current.CancellationToken;
+
+        var existing = await _db.Events
+            .FirstOrDefaultAsync(e => e.ExternalFixtureId == input.ExternalFixtureId, ct);
+        if (existing is not null)
+        {
+            return existing.Id;
+        }
+
+        var evt = new Event
+        {
+            Id = Guid.NewGuid(),
+            ExternalFixtureId = input.ExternalFixtureId,
+            Name = input.Name,
+            ScheduledStart = input.ScheduledStart,
+            ScheduledEnd = input.ScheduledEnd,
+            Status = "Scheduled",
+            CreatedAt = DateTimeOffset.UtcNow,
+        };
+        _db.Events.Add(evt);
+        await _db.SaveChangesAsync(ct);
+
+        _logger.LogInformation("Created event {Id} for fixture {ExternalFixtureId}", evt.Id, input.ExternalFixtureId);
+        return evt.Id;
+    }
+
+    [Activity]
+    public async Task MarkEventStatusAsync(Guid eventId, string status)
+    {
+        var ct = ActivityExecutionContext.Current.CancellationToken;
+        var evt = await _db.Events.FirstAsync(e => e.Id == eventId, ct);
+        evt.Status = status;
+        await _db.SaveChangesAsync(ct);
+        _logger.LogInformation("Event {Id} -> {Status}", eventId, status);
+    }
+
+    [Activity]
     public async Task<Guid> CreateProductAsync(CreateProductInput input)
     {
         var ct = ActivityExecutionContext.Current.CancellationToken;

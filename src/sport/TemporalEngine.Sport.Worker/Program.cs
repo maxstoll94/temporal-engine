@@ -29,8 +29,7 @@ builder.AddNpgsqlDbContext<SportDbContext>("Sport");
 builder.Services
     .AddHostedTemporalWorker(taskQueue: TaskQueues.Sport)
     .AddScopedActivities<SportActivities>()
-    .AddWorkflow<FixtureWorkflow>()
-    .AddWorkflow<EventWorkflow>();
+    .AddWorkflow<FixtureWorkflow>();
 
 var app = builder.Build();
 app.MapDefaultEndpoints();
