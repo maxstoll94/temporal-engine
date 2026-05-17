@@ -29,6 +29,7 @@ builder.AddNpgsqlDbContext<CatalogDbContext>("Catalog");
 builder.Services
     .AddHostedTemporalWorker(taskQueue: TaskQueues.Catalog)
     .AddScopedActivities<CatalogActivities>()
+    .AddWorkflow<EventWorkflow>()
     .AddWorkflow<ProductWorkflow>();
 
 var app = builder.Build();

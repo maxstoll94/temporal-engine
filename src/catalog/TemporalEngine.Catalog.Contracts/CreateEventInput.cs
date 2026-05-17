@@ -1,7 +1,6 @@
-namespace TemporalEngine.Sport.Contracts;
+namespace TemporalEngine.Catalog.Contracts;
 
 public record CreateEventInput(
-    Guid FixtureId,
     string ExternalFixtureId,
     string Name,
     DateTimeOffset ScheduledStart,
